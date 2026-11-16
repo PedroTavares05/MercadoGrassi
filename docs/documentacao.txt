@@ -1,0 +1,17 @@
+"dependencies": {
+"dotenv": "^18.0.10", // uso e criacao de variaveis de ambiente
+"ejs": "^7.0.2", // template engine
+"express": "^5.3.0", // criação do servidor e api
+"express-session": "^1.19.0", // guardar a sessão do usuário
+"mysq12": "^3.24.6" // interagir com o banco
+},
+"devDependencies": {
+"nodemon": "^3.1.14" // resetar o servidor a cada alteração
+
+}
+
+"npm i" pra instalar 
+
+
+Criei as rotas de usuario e de produtos  separado por pastas 
+
