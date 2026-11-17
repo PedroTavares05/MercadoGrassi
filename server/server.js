@@ -18,9 +18,13 @@ app.set("views", path.join(__dirname, "../client/views"));
 // Deixa  a pasta public visivel ao express
 app.use(express.static(path.join(__dirname, "../client/public")));
 
+// configurar o middleware
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
 // Rota inical
 app.get("/", (req, res) => {
-  res.render("index");
+  res.render("usuarios/index");
 });
 
 // Subrotas de produtos
@@ -33,7 +37,7 @@ app.use("/usuario", usuarioRoutes);
 
 // Sobe o banco
 app.listen(port, () => {
-  console.log(`http://localhost${port}`);
+  console.log(`http://localhost:${port}`);
 });
 //Conecta o Banco
 const pool = require("./config/db.js");

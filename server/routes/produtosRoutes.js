@@ -8,5 +8,5 @@ const produtosController = require("../controller/produtosController");
 router.get("/", produtosController.renderizarCadastro);
 
 // Rota lançar produtos
-router.get("/criar", produtosController.cadastrar);
+router.post("/cadastrar", produtosController.cadastrar);
 module.exports = router;

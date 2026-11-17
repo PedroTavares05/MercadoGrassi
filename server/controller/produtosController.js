@@ -6,11 +6,42 @@ module.exports = {
   // Create
   //Acessar a pagina
   renderizarCadastro: (req, res) => {
-    res.send("Abrindo Pagina de Cadastro");
+    res.render("produtos/cadastrar");
   },
   // Cadastrar produto
-  cadastrar: (req, res) => {
-    produtosModel.criarProduto();
-    res.end();
+  cadastrar: async (req, res) => {
+    try {
+      // pegar as imformações  do body
+      const {
+        codigo_interno,
+        nome,
+        categoria,
+        unidade_venda,
+        preco,
+        imagem,
+        esta_ativo,
+      } = req.body;
+
+      // conversão do estado do produto
+      const publico_bool = esta_ativo === "1" || esta_ativo === "true";
+
+      // chama o model para ativar a execução no banco da ffunção criar
+      await produtosModel.criarProduto(
+        codigo_interno,
+        nome,
+        categoria,
+        unidade_venda,
+        preco,
+        imagem,
+        publico_bool,
+      );
+
+      // Redirecionar o usuario
+      res.redirect("/");
+    } catch (erro) {
+      console.log(
+        `o erro foi vc amar dms ${erro} e tbm erro ao cadastrar o produto`,
+      );
+    }
   },
 };
