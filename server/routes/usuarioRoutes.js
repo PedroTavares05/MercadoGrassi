@@ -7,6 +7,7 @@ const usuarioController = require("../controller/usuarioController");
 router.get("/", usuarioController.redenrizarUser);
 
 // lançar usuario
-router.post("/cadastrar", )
+router.get("/cadastrar", usuarioController.cadastrar);
+router.post("/cadastrar", usuarioController.cadastrar);
 
 module.exports = router;
