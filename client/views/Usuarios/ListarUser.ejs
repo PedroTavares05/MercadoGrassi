@@ -1,0 +1,39 @@
+<%- include('../partials/header') %>
+
+<main class="flex-grow-1">
+  <h1>Estou na pagina de listar</h1>
+  <table class="table container table-bordered border-primary text-center">
+    <thead>
+      <tr>
+        <th scope="col">id</th>
+        <th scope="col">Nome</th>
+        <th scope="col">email</th>
+        <th scope="col">senha</th>
+        <th scope="col">perfil</th>
+        <th scope="col">esta ativo</th>
+        <th scope="col">Ações</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% usuario.forEach(user => { %>
+        <tr>
+          <td><%= user.id_usuario %></td>
+          <td><%= user.nome %></td>
+          <td><%= user.email %></td>
+          <td><%= user.senha %></td>
+          <td><%= user.perfil %></td>
+          <td><%= user.esta_ativo %></td>
+          <td>
+         
+            <button type="button" class="btn-outline theme-success">Success</button>
+                <form action="/usuario/excluir/<%= user.id_usuario %>" onsubmit="return confirm('Deseja realmente excluir?')" method="post">
+                <button type="submit" class="btn-outline theme-danger">Danger</button>
+                </form>
+          </td>
+        </tr>
+      <% }); %>
+    </tbody>
+  </table>
+</main>
+
+<%- include('../partials/footer') %>

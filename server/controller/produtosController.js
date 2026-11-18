@@ -44,4 +44,31 @@ module.exports = {
       );
     }
   },
+  // Pede a Lista Para o Model, e Renderiza a Pagina com a Lista
+  listarTodosProdutos: async (req, res) => {
+    try {
+      // Coloque 'produtos' no plural aqui também:
+      const produtos = await produtosModel.listarProdutos();
+
+      // Agora { produtos } encontra a variável acima
+      res.render("produtos/listar", { produtos });
+    } catch (erro) {
+      console.log(
+        `o erro foi vc amar dms ${erro} e tbm esse ai de listar os produtos`,
+      );
+    }
+  },
+  // excluir
+  excluirProduto: async (req, res) => {
+    try {
+      const id = req.params.id;
+      await produtosModel.excluirProduto(id);
+      // Tire o 'n' de rendirect e coloque a '/' antes de produtos:
+      res.redirect("/produtos/listar");
+    } catch (erro) {
+      console.log(
+        `o erro foi vc amar dms ${erro} e tbm esse ai de excluir o produto`,
+      );
+    }
+  },
 };

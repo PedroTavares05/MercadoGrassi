@@ -1,6 +1,6 @@
 <%- include('../partials/header.ejs')%>
 
-<main class="flex-grow-1 ">
+<main class="flex-grow-1">
   <div class="container">
     <!-- cria formulario -->
 
@@ -42,23 +42,27 @@
       <div>
         <label class="perfil"> Perfil</label>
         <select name="perfil" id="perfil">
-            <option value="gestor">Gestor</option>
-            <option value="funcionario"></option>
+          <option value="gestor">Gestor</option>
+          <option value="operador">Operador</option>
         </select>
       </div>
       <!-- Caixinha esta ativo-->
       <div>
         <label class="perfil"> Esta ativo</label>
         <select name="perfil" id="perfil">
-            <option value="ativc">Ativo</option>
-            <option value="desligado">Desligado</option>
+          <option value="ativc">Ativo</option>
+          <option value="desligado">Desligado</option>
         </select>
       </div>
-      
+
+      <div class="d-grid mt-5">
+        <button
+          type="submit"
+          class="btn btn-outline theme-success full-width-btn mt-15"
+        >
+          Cadastrar produto
+        </button>
       </div>
-      <button type="submit" class="btn btn-success full-width-btn mt-15">
-        Cadastrar usuario
-      </button>
     </form>
   </div>
 </main>

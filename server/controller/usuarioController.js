@@ -16,9 +16,30 @@ module.exports = {
       res.redirect("/");
     } catch (erro) {
       console.log(`o erro foi ${erro}`);
-      res
-        .status(500)
-        .send("Erro ao tentar cadastrar o usuário. Verifique o terminal.");
+    }
+  },
+  listarTodosUsuarios: async (req, res) => {
+    try {
+      const usuario = await usuarioModel.listarUsuarios();
+
+      // Caminho exato: pasta 'usuarios' / arquivo 'listaruser'
+      res.render("usuarios/listaruser", { usuario });
+    } catch (erro) {
+      console.log(
+        `o erro foi vc amar dms ${erro} e tbm esse ai de listar os usuarios`,
+      );
+    }
+  },
+  excluirUsuario: async (req, res) => {
+    try {
+      const id = req.params.id;
+      await usuarioModel.excluirUsuario(id);
+      // Tire o 'n' de rendirect e coloque a '/' antes de produtos:
+      res.redirect("/usuario/listar");
+    } catch (erro) {
+      console.log(
+        `o erro foi vc amar dms ${erro} e tbm esse ai de excluir o produto`,
+      );
     }
   },
 };

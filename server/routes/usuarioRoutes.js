@@ -10,4 +10,8 @@ router.get("/", usuarioController.redenrizarUser);
 router.get("/cadastrar", usuarioController.cadastrar);
 router.post("/cadastrar", usuarioController.cadastrar);
 
+// CHAMA A PAGINA DE LISTAR PRODUTOS
+router.get("/listar", usuarioController.listarTodosUsuarios);
+
+router.post("/excluir/:id", usuarioController.excluirUsuario);
 module.exports = router;

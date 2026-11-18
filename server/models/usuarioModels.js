@@ -14,6 +14,17 @@ module.exports = {
       perfil,
       esta_ativo,
     ]);
-    return resultado.inserId;
+    return resultado.insertId;
+  },
+  listarUsuarios: async () => {
+    const sql = `SELECT * FROM tb_usuarios`;
+
+    const [resultado] = await db.execute(sql);
+
+    return resultado;
+  },
+  excluirUsuario: async (id) => {
+    const sql = `DELETE FROM tb_usuarios WHERE id_usuario = ?`;
+    await db.execute(sql, [id]);
   },
 };

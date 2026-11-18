@@ -1,8 +1,43 @@
-<%- include('../partials/header')%>
+<%- include('../partials/header') %>
 
 <main class="flex-grow-1">
-    <h1>Estou na pagina de listar</h1>
-
+  <h1>Estou na pagina de listar</h1>
+  <table class="table container table-bordered border-primary text-center">
+    <thead>
+      <tr>
+        <th scope="col">Codigo_interno</th>
+        <th scope="col">Nome</th>
+        <th scope="col">Categoria</th>
+        <th scope="col">Preço</th>
+        <th scope="col">Medida</th>
+        <th scope="col">Foto</th>
+        <th scope="col">Visibilidade</th>
+        <th scope="col">Ações</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% produtos.forEach(prod => { %>
+        <!-- Criando uma linha nova para cada produto -->
+        <tr>
+          <td><%= prod.codigo_interno %></td>
+          <td><%= prod.nome %></td>
+          <td><%= prod.categoria %></td>
+          <td><%= prod.preco %></td>
+          <td><%= prod.unidade_venda %></td>
+          <td><img src="<%= prod.imagem %>" alt="foto" width="64px" height="64px" ></td>
+          <td><%= prod.esta_ativo %></td>
+          
+          <td>
+            <a href=""><button type="button" class="btn-outline theme-success">Success</button>
+            </a>
+            <form action="/produtos/excluir/<%- prod.id_produto%>" onsubmit="return confirm('deseja realmente excluir?')" method="post">
+                <button type="submit" class="btn-outline theme-danger">Danger</button>
+            </form>
+           </td>
+        </tr>
+      <% }); %>
+    </tbody>
+  </table>
 </main>
 
-<%- include('../partials/footer')%>
+<%- include('../partials/footer') %>

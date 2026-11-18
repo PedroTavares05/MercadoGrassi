@@ -1,18 +1,20 @@
 <!-- Header -->
 <%- include('../partials/header.ejs')%>
 
-<main class="flex-grow-1">
+<main class="flex-grow-1 container">
   <h1>ops, algo deu errado</h1>
 
       <!-- Mostra a mensagem de erro -->
   <p class="fs-2 bold"> 
 
 
-    <%= mensagem %>
+    Erro: <%= mensagem %>
   </p>
   <!-- Mostra o erro se houver -->
    <% if(typeof erro !== 'undefined' && erro){ %>
+    <h3>
         <%= erro %>
+    </h3>
     <% } %>
 </main>
 <!-- footer -->

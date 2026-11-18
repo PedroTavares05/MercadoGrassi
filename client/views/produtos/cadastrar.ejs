@@ -1,13 +1,14 @@
 <%- include('../partials/header.ejs')%>
 
-<main class="flex-grow-1 ">
+<main class="flex-grow-1">
+  <h1 class="text-center my-3">Estou na Pagina de cadastro de Produto</h1>
   <div class="container">
     <!-- cria formulario -->
 
     <form action="/produtos/cadastrar" method="post">
       <!-- Caixinha Codigo interno-->
       <div>
-        <label class="codigo_interno"> Codigo interno </label>
+        <label class="codigo_interno m-5"> Codigo interno </label>
         <input
           type="text"
           id="codigo_interno"
@@ -18,7 +19,7 @@
       </div>
       <!-- Caixinha Nome-->
       <div>
-        <label class="nome"> Nome</label>
+        <label class="nome m-5"> Nome</label>
         <input
           type="text"
           id="nome"
@@ -29,7 +30,7 @@
       </div>
       <!-- Caixinha Categoria -->
       <div>
-        <label class="categoria"> Categoria </label>
+        <label class="categoria m-5"> Categoria </label>
         <select name="categoria" id="categoria" class="form-control" required>
           <option value="legume">legume</option>
           <option value="fruta">Fruta</option>
@@ -38,7 +39,7 @@
       </div>
       <!-- Caixinha Unidade venda-->
       <div>
-        <label class="unidade_venda"> Unidade Venda</label>
+        <label class="unidade_venda m-5"> Unidade Venda</label>
         <select
           name="unidade_venda"
           id="unidade_venda"
@@ -52,7 +53,7 @@
       </div>
       <!-- Caixinha preco -->
       <div>
-        <label class="preco"> preço </label>
+        <label class="preco m-5"> preço </label>
         <input
           type="number"
           id="preco"
@@ -63,7 +64,7 @@
       </div>
       <!-- Caixinha  imagem-->
       <div>
-        <label class="imagem"> Imagem </label>
+        <label class="imagem m-5"> Imagem </label>
         <input
           type="text"
           id="imagem"
@@ -74,15 +75,20 @@
       </div>
       <!-- Caixinha  publico_bool-->
       <div>
-        <label class="esta_ativo"> Ativo ou não ativo</label>
+        <label class="esta_ativo m-5"> Ativo ou não ativo</label>
         <select name="esta_ativo" id="esta_ativo">
           <option value="1">Ativo</option>
           <option value="0">Desativado</option>
         </select>
       </div>
-      <button type="submit" class="btn btn-success full-width-btn mt-15">
-        Cadastrar produto
-      </button>
+      <div class="d-grid mt-5">
+        <button
+          type="submit"
+          class="btn btn-outline theme-success full-width-btn mt-15"
+        >
+          Cadastrar produto
+        </button>
+      </div>
     </form>
   </div>
 </main>
