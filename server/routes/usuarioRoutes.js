@@ -14,4 +14,10 @@ router.post("/cadastrar", usuarioController.cadastrar);
 router.get("/listar", usuarioController.listarTodosUsuarios);
 
 router.post("/excluir/:id", usuarioController.excluirUsuario);
+
+// update
+router.get("/editar/:id", usuarioController.renderizarEditar);
+
+// editar
+router.post("/editar/:id", usuarioController.editarUsuario);
 module.exports = router;

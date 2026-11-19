@@ -1,7 +1,7 @@
 <%- include('../partials/header') %>
 
 <main class="flex-grow-1">
-  <h1>Estou na pagina de listar</h1>
+  <h1 class="text-center">Estou na pagina de listar</h1>
   <table class="table container table-bordered border-primary text-center">
     <thead>
       <tr>
@@ -25,7 +25,7 @@
           <td><%= user.esta_ativo %></td>
           <td>
          
-            <button type="button" class="btn-outline theme-success">Success</button>
+            <a href="/usuario/editar/<%= user.id_usuario  %>"><button type="button" class="btn-outline theme-success">Success</button></a>
                 <form action="/usuario/excluir/<%= user.id_usuario %>" onsubmit="return confirm('Deseja realmente excluir?')" method="post">
                 <button type="submit" class="btn-outline theme-danger">Danger</button>
                 </form>

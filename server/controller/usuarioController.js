@@ -42,4 +42,37 @@ module.exports = {
       );
     }
   },
+  renderizarEditar: async (req, res) => {
+    try {
+      const id = req.params.id;
+      const usuario = await usuarioModel.buscarId(id);
+
+      if (!usuario) {
+        return res.redirect("/usuario/listar");
+      }
+
+      res.render("usuarios/editaruser", { usuario });
+    } catch (erro) {
+      console.log(`Erro ao buscar o usuario: ${erro}`);
+    }
+  },
+
+  editarUsuario: async (req, res) => {
+    try {
+      const id = req.params.id;
+      const { nome, email, senha, perfil, esta_ativo } = req.body;
+
+      await usuarioModel.editarUsuario(id, {
+        nome: nome ?? "",
+        email: email ?? "",
+        senha: senha ?? "",
+        perfil: perfil ?? "operador",
+        esta_ativo: esta_ativo ?? 1,
+      });
+
+      res.redirect("/usuario/listar");
+    } catch (erro) {
+      console.log(`Erro ao editar o usuario: ${erro}`);
+    }
+  },
 };

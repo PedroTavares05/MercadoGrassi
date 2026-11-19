@@ -1,0 +1,77 @@
+<%- include('../partials/header.ejs')%>
+
+<main class="flex-grow-1">
+  <h1 class="text-center my-3">Estou na Pagina de EDIÇÃO de Usuário</h1>
+  <div class="container">
+    <!-- cria formulario -->
+    <form action="/usuario/editar/<%= usuario.id_usuario %>" method="post">
+      <!-- Caixinha nome -->
+      <div>
+        <label class="nome m-2"> Nome </label>
+        <input
+          type="text"
+          id="nome"
+          name="nome"
+          class="form-control"
+          required
+          value="<%= usuario.nome %>"
+        />
+      </div>
+
+      <!-- Caixinha email -->
+      <div>
+        <label class="email m-2"> E-mail </label>
+        <input
+          type="email"
+          id="email"
+          name="email"
+          class="form-control"
+          required
+          value="<%= usuario.email %>"
+        />
+      </div>
+
+      <!-- Caixinha Senha -->
+      <div>
+        <label class="senha m-2"> Senha </label>
+        <input
+          type="password"
+          id="senha"
+          name="senha"
+          class="form-control"
+          required
+          value="<%= usuario.senha %>"
+        />
+      </div>
+
+      <!-- Caixinha Perfil -->
+      <div>
+        <label class="perfil m-2"> Perfil </label>
+        <select name="perfil" id="perfil" class="form-control" required>
+          <option value="gestor" <%= usuario.perfil === "gestor" ? "selected" : "" %>>Gestor</option>
+          <option value="operador" <%= usuario.perfil === "operador" ? "selected" : "" %>>Operador</option>
+        </select>
+      </div>
+
+      <!-- Caixinha esta ativo -->
+      <div>
+        <label class="esta_ativo m-2"> Está ativo </label>
+        <select name="esta_ativo" id="esta_ativo" class="form-control" required>
+          <option value="1" <%= Number(usuario.esta_ativo) === 1 ? "selected" : "" %>>Ativo</option>
+          <option value="0" <%= Number(usuario.esta_ativo) === 0 ? "selected" : "" %>>Desligado</option>
+        </select>
+      </div>
+
+      <div class="d-grid mt-5">
+        <button
+          type="submit"
+          class="btn btn-outline theme-success full-width-btn mt-15"
+        >
+          Editar usuário
+        </button>
+      </div>
+    </form>
+  </div>
+</main>
+
+<%- include('../partials/footer.ejs')%> 

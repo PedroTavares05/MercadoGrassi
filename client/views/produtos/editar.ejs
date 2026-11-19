@@ -1,8 +1,100 @@
-<%- include('../partials/header')%>
+<%- include('../partials/header.ejs')%>
 
 <main class="flex-grow-1">
-    <h1>Estou na pagina de Editar</h1>
+  <h1 class="text-center my-3">Estou na Pagina de EDIÇÃO de Produto</h1>
+  <div class="container">
+    <!-- cria formulario -->
 
+    <form action="/produtos/editar/<%=  produto.id_produto %>" method="post">
+      <!-- Caixinha Codigo interno-->
+      <div>
+        <label class="codigo_interno m-5"> Codigo interno </label>
+        <input
+          type="text"
+          id="codigo_interno"
+          name="codigo_interno"
+          class="form-control"
+          required
+          value="<%= produto.codigo_interno  %>"
+        />
+      </div>
+      <!-- Caixinha Nome-->
+      <div>
+        <label class="nome m-5"> Nome</label>
+        <input
+          type="text"
+          id="nome"
+          name="nome"
+          class="form-control"
+          required
+          value="<%= produto.nome %>"
+        />
+      </div>
+      <!-- Caixinha Categoria -->
+      <div>
+        <label class="categoria m-5"> Categoria </label>
+        <select name="categoria" id="categoria" class="form-control" required>
+          <option value="LEGUME" <%= produto.categoria === "LEGUME" ? `selected` : ""  %>>legume</option>
+          <option value="FRUTA" <%= produto.categoria === "FRUTA" ? `selected` : ""  %>>Fruta</option>
+          <option value="VERDURA" <%= produto.categoria === "VERDURA" ? `selected` : ""  %>>Verdura</option>
+        </select>
+      </div>
+      <!-- Caixinha Unidade venda-->
+      <div>
+        <label class="unidade_venda m-5"> Unidade Venda</label>
+        <select
+          name="unidade_venda"
+          id="unidade_venda"
+          class="form-control"
+          required
+        >
+          <option value="MACO" <%= produto.unidade_venda === "MACO" ? `selected` : ""  %>>Maço</option>
+          <option value="KG" <%= produto.unidade_venda === "KG" ? `selected` : ""  %>>Kilo grama</option>
+          <option value="UNIDADE" <%= produto.unidade_venda === "UNIDADE" ? `selected` : ""  %>>Unidade</option>
+        </select>
+      </div>
+      <!-- Caixinha preco -->
+      <div>
+        <label class="preco m-5"> preço </label>
+        <input
+          type="number"
+          id="preco"
+          name="preco"
+          class="form-control"
+          required
+          value="<%= produto.preco %>"
+        />
+      </div>
+      <!-- Caixinha  imagem-->
+      <div>
+        <label class="imagem m-5"> Imagem </label>
+        <input
+          type="text"
+          id="imagem"
+          name="imagem"
+          class="form-control"
+          required
+          value=" <%= produto.imagem %>"
+        />
+      </div>
+      <!-- Caixinha  publico_bool-->
+      <div>
+        <label class="esta_ativo m-5"> Ativo ou não ativo</label>
+        <select name="esta_ativo" id="esta_ativo">
+          <option value="1" <%= produto.esta_ativo === "1" ? `selected` : ""  %>>Ativo</option>
+          <option value="0" <%= produto.esta_ativo === "0" ? `selected` : ""  %>>Desativado</option>
+        </select>
+      </div>
+      <div class="d-grid mt-5">
+        <button
+          type="submit"
+          class="btn btn-outline theme-success full-width-btn mt-15"
+        >
+          Editar produto
+        </button>
+      </div>
+    </form>
+  </div>
 </main>
 
-<%- include('../partials/footer')%>
+<%- include('../partials/footer.ejs')%>

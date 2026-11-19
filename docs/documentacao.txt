@@ -1,17 +1,791 @@
-"dependencies": {
-"dotenv": "^18.0.10", // uso e criacao de variaveis de ambiente
-"ejs": "^7.0.2", // template engine
-"express": "^5.3.0", // criação do servidor e api
-"express-session": "^1.19.0", // guardar a sessão do usuário
-"mysq12": "^3.24.6" // interagir com o banco
-},
-"devDependencies": {
-"nodemon": "^3.1.14" // resetar o servidor a cada alteração
+Este manual completo parte do computador limpo (sem pasta, sem banco configurado, sem pacotes) até o sistema **MercadoGrassi** rodando no navegador. Se você abrir um VS Code vazio agora e seguir cada comando na ordem, o projeto inteiro nasce idêntico ao seu repositório.
 
+## Fase 1: Preparação do Ambiente e VS Code
+
+Antes de criar qualquer arquivo, garanta que as ferramentas base e as extensões do VS Code estejam prontas.
+
+### 1. Softwares Obrigatórios na Máquina
+
+* **Node.js (v18 ou v20 LTS)**: Inclui o `node` (motor que roda o JavaScript no servidor) e o `npm` (gerenciador de pacotes). Teste no terminal com `node -v` e `npm -v`.
+* **MySQL Server (8.0+)**: O banco de dados relacional onde ficará o schema `db_mercado_grassi`.
+* **Git Bash**: Terminal recomendado no Windows para rodar os comandos `mkdir`, `touch` e `npm` sem erros de permissão.
+
+### 2. Extensões do VS Code para este Projeto
+
+Instale estas extensões na aba **Extensions (`Ctrl + Shift + X`)** do VS Code para não programar no escuro:
+
+* **EJS Language Support** (*DigitalBrainstem*): Ativa syntax highlighting e autocomplete das tags `<% %>` e `<%= %>` nos arquivos `.ejs` dentro de `client/views/`. Sem ela, o VS Code trata o EJS como texto puro ou reclama de erro no HTML.
+
+
+* **Prettier - Code formatter**: Formata automaticamente seus arquivos JavaScript (`.js`) em `server/` e HTML/EJS ao salvar.
+
+
+* **vscode-icons**: Diferencia visualmente as pastas `client`, `server`, `routes`, `controller`, `models`, `config` e `data` na barra lateral.
+
+
+* **DotENV** (*mikestead*): Colore a sintaxe das variáveis chave-valor dentro do arquivo `server/.env`.
+
+
+* **MySQL** (*Weijan Chen* ou *cweijan*): Permite conectar no MySQL direto de dentro do VS Code e rodar o script `data/MercadoGrassi.sql` sem precisar abrir o Workbench.
+
+
+
+## Fase 2: Criação da Estrutura de Pastas do Zero
+
+Abra o **Git Bash** (ou o terminal integrado do VS Code com `Ctrl + '`), navegue até a área de trabalho ou pasta de projetos e rode este bloco de comandos. Ele cria a pasta raiz e todas as subpastas do **MercadoGrassi** de uma vez:
+
+```bash
+# 1. Cria a pasta raiz do projeto e entra nela
+mkdir MercadoGrassi
+cd MercadoGrassi
+
+# 2. Cria as pastas de banco de dados e documentação
+mkdir data docs
+
+# 3. Cria a árvore de pastas do Front-end (EJS Views)
+mkdir -p client/views/partials
+mkdir -p client/views/produtos
+mkdir -p client/views/Usuarios
+
+# 4. Cria a árvore de pastas do Back-end (Node/Express MVC)
+mkdir -p server/config
+mkdir -p server/controller
+mkdir -p server/models
+mkdir -p server/routes
+
+# 5. Abre o projeto no VS Code
+code .
+
+```
+
+Na raiz (`MercadoGrassi/`), crie o arquivo **`.gitignore`** para impedir que a pasta de pacotes e suas senhas subam para o GitHub:
+
+```text
+node_modules/
+.env
+
+```
+
+## Fase 3: Inicialização do NPM e Instalação dos Pacotes
+
+Toda a aplicação Node.js roda de dentro da pasta **`server/`**. Você nunca roda `npm install` na raiz `MercadoGrassi/`, mas sim dentro de `MercadoGrassi/server/`.
+
+### 1. Inicializar o `package.json`
+
+No terminal do VS Code, entre na pasta `server` e inicie o projeto Node:
+
+```bash
+cd server
+npm init -y
+
+```
+
+(Isso cria o arquivo `server/package.json` padrão).
+
+### 2. Instalar as Dependências do Projeto
+
+Rode o comando abaixo (ainda dentro de `server/`) para baixar todas as bibliotecas necessárias e gerar a pasta `node_modules` e o `package-lock.json`:
+
+```bash
+npm install dotenv ejs express express-session mysql2 nodemon
+
+```
+
+**O que cada comando/pacote instalado faz no seu projeto:**
+
+* **`express`**: É o coração do servidor (`server.js`). Escuta a porta HTTP, recebe requisições GET/POST, lê dados de formulários HTML (`express.urlencoded`) e divide o sistema em rotas (`express.Router()`).
+
+
+* **`ejs`**: É o motor de visualização. O Express usa o EJS para ler os arquivos `.ejs` da pasta `../client/views`, trocar as tags `<%= %>` pelos dados do MySQL e devolver HTML puro para o navegador.
+
+
+* **`mysql2`**: É o driver que conecta o Node.js ao MySQL (`server/config/db.js`). Usamos o modo `mysql2/promise` para poder usar `async/await` nos Models e `?` nas queries (evitando SQL Injection).
+
+
+* **`express-session`**: Cria e gerencia a sessão do usuário logado na memória do servidor e grava o cookie de sessão no navegador quando ele faz login em `Login.ejs`.
+
+
+* **`dotenv`**: Lê o arquivo `server/.env` e carrega os valores dentro do objeto global `process.env` do Node.
+
+
+* **`nodemon`**: Monitora seus arquivos `.js` e `.ejs`. Toda vez que você aperta `Ctrl + S`, ele reinicia o servidor sozinho no terminal.
+
+
+
+### 3. Configurar o Script de Execução no `server/package.json`
+
+Abra o arquivo `server/package.json` gerado e deixe-o exatamente assim para que o comando `npm start` já rode com o `nodemon`:
+
+```json
+{
+  "name": "server",
+  "version": "1.0.0",
+  "description": "Backend MVC Mercado Grassi",
+  "main": "server.js",
+  "scripts": {
+    "start": "nodemon server.js",
+    "dev": "nodemon server.js"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "ejs": "^3.1.10",
+    "express": "^4.19.2",
+    "express-session": "^1.18.0",
+    "mysql2": "^3.11.0",
+    "nodemon": "^3.1.4"
+  }
 }
 
-"npm i" pra instalar 
+```
+
+## Fase 4: Criação do Banco de Dados (`data/MercadoGrassi.sql`)
+
+1. Crie o arquivo **`data/MercadoGrassi.sql`** e cole o script das tabelas:
 
 
-Criei as rotas de usuario e de produtos  separado por pastas 
 
+```sql
+CREATE DATABASE IF NOT EXISTS db_mercado_grassi;
+USE db_mercado_grassi;
+
+CREATE TABLE IF NOT EXISTS tb_usuarios (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(100) NOT NULL,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    senha VARCHAR(255) NOT NULL,
+    cargo VARCHAR(50) DEFAULT 'Operador'
+);
+
+CREATE TABLE IF NOT EXISTS tb_produtos (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nome VARCHAR(100) NOT NULL,
+    categoria VARCHAR(50) NOT NULL,
+    preco DECIMAL(10, 2) NOT NULL,
+    quantidade INT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS tb_ocorrencias (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    titulo VARCHAR(100) NOT NULL,
+    descricao TEXT NOT NULL,
+    data_ocorrencia TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Dados iniciais para você conseguir logar e testar de imediato
+INSERT INTO tb_usuarios (nome, email, senha, cargo) VALUES
+('Admin Grassi', 'admin@mercadograssi.com', '123456', 'Gerente');
+
+INSERT INTO tb_produtos (nome, categoria, preco, quantidade) VALUES
+('Arroz 5kg', 'Mercearia', 28.90, 50),
+('Feijão Carioca 1kg', 'Mercearia', 8.50, 80),
+('Leite Integral 1L', 'Laticínios', 5.49, 120);
+
+```
+
+2. **Importe no seu MySQL**: Abra o MySQL Workbench (ou a extensão MySQL do VS Code), copie todo o conteúdo de `data/MercadoGrassi.sql` e execute (atalho `Ctrl + Shift + Enter` no Workbench) para criar o banco `db_mercado_grassi`.
+
+
+
+## Fase 5: Configuração do `.env` e Conexão com o Banco (`server/config/`)
+
+1. Crie o arquivo **`server/.env`** (coloque a senha real do seu MySQL local em `DB_PASS`):
+
+
+
+```env
+PORT=3000
+DB_HOST=localhost
+DB_USER=root
+DB_PASS=sua_senha_do_mysql
+DB_NAME=db_mercado_grassi
+SESSION_SECRET=segredo_mercado_grassi_2026
+
+```
+
+2. Crie o arquivo **`server/config/db.js`**. Ele importa o `mysql2/promise` e o `dotenv`, lê o `.env` e exporta o pool de conexão que todos os Models vão usar:
+
+
+
+```javascript
+const mysql = require('mysql2/promise');
+require('dotenv').config();
+
+const pool = mysql.createPool({
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASS,
+    database: process.env.DB_NAME,
+    waitForConnections: true,
+    connectionLimit: 10,
+    queueLimit: 0
+});
+
+module.exports = pool;
+
+```
+
+## Fase 6: Criação dos Models (`server/models/`)
+
+Os Models são os únicos arquivos que conversam com o banco de dados (`db.execute`).
+
+1. Crie **`server/models/produtosModels.js`**:
+
+
+
+```javascript
+const db = require('../config/db');
+
+const ProdutosModel = {
+    listarTodos: async () => {
+        const [rows] = await db.execute('SELECT * FROM tb_produtos ORDER BY id DESC');
+        return rows;
+    },
+
+    buscarPorId: async (id) => {
+        const [rows] = await db.execute('SELECT * FROM tb_produtos WHERE id = ?', [id]);
+        return rows[0];
+    },
+
+    criar: async ({ nome, categoria, preco, quantidade }) => {
+        const sql = 'INSERT INTO tb_produtos (nome, categoria, preco, quantidade) VALUES (?, ?, ?, ?)';
+        const [result] = await db.execute(sql, [nome, categoria, preco, quantidade]);
+        return result;
+    },
+
+    atualizar: async (id, { nome, categoria, preco, quantidade }) => {
+        const sql = 'UPDATE tb_produtos SET nome = ?, categoria = ?, preco = ?, quantidade = ? WHERE id = ?';
+        const [result] = await db.execute(sql, [nome, categoria, preco, quantidade, id]);
+        return result;
+    }
+};
+
+module.exports = ProdutosModel;
+
+```
+
+2. Crie **`server/models/usuarioModels.js`**:
+
+
+
+```javascript
+const db = require('../config/db');
+
+const UsuarioModel = {
+    listarTodos: async () => {
+        const [rows] = await db.execute('SELECT id, nome, email, cargo FROM tb_usuarios');
+        return rows;
+    },
+
+    criar: async ({ nome, email, senha, cargo }) => {
+        const sql = 'INSERT INTO tb_usuarios (nome, email, senha, cargo) VALUES (?, ?, ?, ?)';
+        const [result] = await db.execute(sql, [nome, email, senha, cargo || 'Operador']);
+        return result;
+    },
+
+    autenticar: async (email, senha) => {
+        const sql = 'SELECT * FROM tb_usuarios WHERE email = ? AND senha = ?';
+        const [rows] = await db.execute(sql, [email, senha]);
+        return rows[0];
+    }
+};
+
+module.exports = UsuarioModel;
+
+```
+
+## Fase 7: Criação dos Controllers (`server/controller/`)
+
+Os Controllers fazem o meio de campo: recebem `req` da rota, chamam o Model e respondem com `res.render()` ou `res.redirect()`.
+
+1. Crie **`server/controller/produtosController.js`**:
+
+
+
+```javascript
+const ProdutosModel = require('../models/produtosModels');
+
+const produtosController = {
+    listar: async (req, res) => {
+        try {
+            const produtos = await ProdutosModel.listarTodos();
+            res.render('produtos/listar', { produtos });
+        } catch (error) {
+            res.render('produtos/error', { mensagem: 'Erro ao listar produtos: ' + error.message });
+        }
+    },
+
+    formCadastrar: (req, res) => {
+        res.render('produtos/cadastrar');
+    },
+
+    criar: async (req, res) => {
+        try {
+            const { nome, categoria, preco, quantidade } = req.body;
+            await ProdutosModel.criar({
+                nome: nome ?? '',
+                categoria: categoria ?? '',
+                preco: preco ?? 0,
+                quantidade: quantidade ?? 0
+            });
+            res.redirect('/produtos/listar');
+        } catch (error) {
+            res.render('produtos/error', { mensagem: 'Erro ao cadastrar produto: ' + error.message });
+        }
+    },
+
+    formEditar: async (req, res) => {
+        try {
+            const produto = await ProdutosModel.buscarPorId(req.params.id);
+            res.render('produtos/editar', { produto });
+        } catch (error) {
+            res.render('produtos/error', { mensagem: 'Erro ao carregar edição: ' + error.message });
+        }
+    },
+
+    atualizar: async (req, res) => {
+        try {
+            const { nome, categoria, preco, quantidade } = req.body;
+            await ProdutosModel.atualizar(req.params.id, {
+                nome: nome ?? '',
+                categoria: categoria ?? '',
+                preco: preco ?? 0,
+                quantidade: quantidade ?? 0
+            });
+            res.redirect('/produtos/listar');
+        } catch (error) {
+            res.render('produtos/error', { mensagem: 'Erro ao atualizar produto: ' + error.message });
+        }
+    }
+};
+
+module.exports = produtosController;
+
+```
+
+2. Crie **`server/controller/usuarioController.js`**:
+
+
+
+```javascript
+const UsuarioModel = require('../models/usuarioModels');
+
+const usuarioController = {
+    index: (req, res) => {
+        res.render('Usuarios/index');
+    },
+
+    formLogin: (req, res) => {
+        res.render('Usuarios/Login', { erro: null });
+    },
+
+    login: async (req, res) => {
+        try {
+            const { email, senha } = req.body;
+            const usuario = await UsuarioModel.autenticar(email ?? '', senha ?? '');
+            if (!usuario) {
+                return res.render('Usuarios/Login', { erro: 'E-mail ou senha inválidos.' });
+            }
+            req.session.usuario = { id: usuario.id, nome: usuario.nome, cargo: usuario.cargo };
+            res.redirect('/produtos/listar');
+        } catch (error) {
+            res.render('Usuarios/Login', { erro: 'Falha ao autenticar: ' + error.message });
+        }
+    },
+
+    formCadastro: (req, res) => {
+        res.render('Usuarios/cadastrauser');
+    },
+
+    cadastrar: async (req, res) => {
+        try {
+            const { nome, email, senha, cargo } = req.body;
+            await UsuarioModel.criar({
+                nome: nome ?? '',
+                email: email ?? '',
+                senha: senha ?? '',
+                cargo: cargo ?? 'Operador'
+            });
+            res.redirect('/usuarios/listar');
+        } catch (error) {
+            res.status(500).send('Erro ao cadastrar usuário: ' + error.message);
+        }
+    },
+
+    listar: async (req, res) => {
+        try {
+            const usuarios = await UsuarioModel.listarTodos();
+            res.render('Usuarios/ListarUser', { usuarios });
+        } catch (error) {
+            res.status(500).send('Erro ao listar usuários: ' + error.message);
+        }
+    }
+};
+
+module.exports = usuarioController;
+
+```
+
+## Fase 8: Criação das Rotas (`server/routes/`) e do `server.js`
+
+1. Crie **`server/routes/produtosRoutes.js`**:
+
+
+
+```javascript
+const express = require('express');
+const router = express.Router();
+const produtosController = require('../controller/produtosController');
+
+router.get('/listar', produtosController.listar);
+router.get('/cadastrar', produtosController.formCadastrar);
+router.post('/criar', produtosController.criar);
+router.get('/editar/:id', produtosController.formEditar);
+router.post('/editar/:id', produtosController.atualizar);
+
+module.exports = router;
+
+```
+
+2. Crie **`server/routes/usuarioRoutes.js`**:
+
+
+
+```javascript
+const express = require('express');
+const router = express.Router();
+const usuarioController = require('../controller/usuarioController');
+
+router.get('/', usuarioController.index);
+router.get('/login', usuarioController.formLogin);
+router.post('/login', usuarioController.login);
+router.get('/cadastrar', usuarioController.formCadastro);
+router.post('/cadastrar', usuarioController.cadastrar);
+router.get('/listar', usuarioController.listar);
+
+module.exports = router;
+
+```
+
+3. Crie o arquivo principal **`server/server.js`**:
+
+
+
+```javascript
+const express = require('express');
+const session = require('express-session');
+const path = require('path');
+require('dotenv').config();
+
+const produtosRoutes = require('./routes/produtosRoutes');
+const usuarioRoutes = require('./routes/usuarioRoutes');
+
+const app = express();
+const PORT = process.env.PORT || 3000;
+
+// Configura o EJS e aponta para a pasta client/views fora de server/
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, '../client/views'));
+
+// Permite ler o req.body enviado pelos formulários HTML (<form method="POST">)
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+
+// Ativa o controle de sessão
+app.use(session({
+    secret: process.env.SESSION_SECRET || 'chave_padrao_grassi',
+    resave: false,
+    saveUninitialized: false
+}));
+
+// Conecta os prefixos de rota aos arquivos da pasta routes/
+app.use('/produtos', produtosRoutes);
+app.use('/usuarios', usuarioRoutes);
+
+// Rota principal redireciona para a tela de login
+app.get('/', (req, res) => {
+    res.redirect('/usuarios/login');
+});
+
+app.listen(PORT, () => {
+    console.log(`Servidor MercadoGrassi rodando em: http://localhost:${PORT}`);
+});
+
+```
+
+## Fase 9: Criação das Views EJS (`client/views/`)
+
+Agora crie os arquivos de interface que serão renderizados pelos controllers.
+
+### 1. Layout Base (`client/views/partials/`)
+
+* **`client/views/partials/header.ejs`**:
+
+
+
+```html
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mercado Grassi</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
+    <div class="container">
+        <a class="navbar-brand" href="/produtos/listar">Mercado Grassi</a>
+        <div class="navbar-nav">
+            <a class="nav-link" href="/produtos/listar">Produtos</a>
+            <a class="nav-link" href="/produtos/cadastrar">Cadastrar Produto</a>
+            <a class="nav-link" href="/usuarios/listar">Usuários</a>
+            <a class="nav-link" href="/usuarios/cadastrar">Cadastrar Usuário</a>
+            <a class="nav-link" href="/usuarios/login">Login</a>
+        </div>
+    </div>
+</nav>
+<main class="container">
+
+```
+
+* **`client/views/partials/footer.ejs`**:
+
+
+
+```html
+</main>
+<footer class="text-center text-muted py-4 mt-5 border-top">
+    <small>&copy; Mercado Grassi - Gestão Interna</small>
+</footer>
+</body>
+</html>
+
+```
+
+### 2. Telas de Produtos (`client/views/produtos/`)
+
+* **`client/views/produtos/cadastrar.ejs`**:
+
+
+
+```html
+<%- include('../partials/header') %>
+<h2>Cadastrar Novo Produto</h2>
+<form action="/produtos/criar" method="POST" class="card p-4 shadow-sm mt-3">
+    <div class="mb-3">
+        <label class="form-label">Nome</label>
+        <input type="text" name="nome" class="form-control" required>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Categoria</label>
+        <input type="text" name="categoria" class="form-control" required>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Preço (R$)</label>
+        <input type="number" step="0.01" name="preco" class="form-control" required>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Quantidade</label>
+        <input type="number" name="quantidade" class="form-control" required>
+    </div>
+    <button type="submit" class="btn btn-success">Salvar</button>
+</form>
+<%- include('../partials/footer') %>
+
+```
+
+* **`client/views/produtos/listar.ejs`**:
+
+
+
+```html
+<%- include('../partials/header') %>
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>Lista de Produtos</h2>
+    <a href="/produtos/cadastrar" class="btn btn-primary">+ Novo Produto</a>
+</div>
+<table class="table table-bordered table-striped bg-white shadow-sm">
+    <thead class="table-dark">
+        <tr>
+            <th>ID</th>
+            <th>Nome</th>
+            <th>Categoria</th>
+            <th>Preço</th>
+            <th>Quantidade</th>
+            <th>Ações</th>
+        </tr>
+    </thead>
+    <tbody>
+        <% produtos.forEach(produto => { %>
+            <tr>
+                <td><%= produto.id %></td>
+                <td><%= produto.nome %></td>
+                <td><%= produto.categoria %></td>
+                <td>R$ <%= Number(produto.preco).toFixed(2) %></td>
+                <td><%= produto.quantidade %></td>
+                <td>
+                    <a href="/produtos/editar/<%= produto.id %>" class="btn btn-sm btn-warning">Editar</a>
+                </td>
+            </tr>
+        <% }) %>
+    </tbody>
+</table>
+<%- include('../partials/footer') %>
+
+```
+
+* **`client/views/produtos/editar.ejs`**:
+
+
+
+```html
+<%- include('../partials/header') %>
+<h2>Editar Produto</h2>
+<%- include('../partials/footer') %>
+
+```
+
+* **`client/views/produtos/error.ejs`**:
+
+
+
+```html
+<%- include('../partials/header') %>
+<div class="alert alert-danger">
+    <h4>Ocorreu um erro</h4>
+    <p><%= mensagem %></p>
+    <a href="/produtos/listar" class="btn btn-secondary">Voltar</a>
+</div>
+<%- include('../partials/footer') %>
+
+```
+
+### 3. Telas de Usuários (`client/views/Usuarios/`)
+
+* **`client/views/Usuarios/index.ejs`**:
+
+
+
+```html
+<%- include('../partials/header') %>
+<h2>Módulo de Usuários</h2>
+<a href="/usuarios/login" class="btn btn-primary">Ir para Login</a>
+<%- include('../partials/footer') %>
+
+```
+
+* **`client/views/Usuarios/Login.ejs`**:
+
+
+
+```html
+<%- include('../partials/header') %>
+<div class="row justify-content-center">
+    <div class="col-md-5">
+        <div class="card p-4 shadow-sm">
+            <h3 class="text-center mb-3">Login</h3>
+            <% if (erro) { %>
+                <div class="alert alert-danger"><%= erro %></div>
+            <% } %>
+            <form action="/usuarios/login" method="POST">
+                <div class="mb-3">
+                    <label class="form-label">E-mail</label>
+                    <input type="email" name="email" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Senha</label>
+                    <input type="password" name="senha" class="form-control" required>
+                </div>
+                <button type="submit" class="btn btn-dark w-100">Entrar</button>
+            </form>
+        </div>
+    </div>
+</div>
+<%- include('../partials/footer') %>
+
+```
+
+* **`client/views/Usuarios/cadastrauser.ejs`**:
+
+
+
+```html
+<%- include('../partials/header') %>
+<h2>Cadastrar Usuário</h2>
+<form action="/usuarios/cadastrar" method="POST" class="card p-4 shadow-sm mt-3">
+    <div class="mb-3">
+        <label class="form-label">Nome</label>
+        <input type="text" name="nome" class="form-control" required>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">E-mail</label>
+        <input type="email" name="email" class="form-control" required>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Senha</label>
+        <input type="password" name="senha" class="form-control" required>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Cargo</label>
+        <input type="text" name="cargo" class="form-control" value="Operador">
+    </div>
+    <button type="submit" class="btn btn-primary">Cadastrar</button>
+</form>
+<%- include('../partials/footer') %>
+
+```
+
+* **`client/views/Usuarios/ListarUser.ejs`**:
+
+
+
+```html
+<%- include('../partials/header') %>
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>Usuários do Sistema</h2>
+    <a href="/usuarios/cadastrar" class="btn btn-primary">+ Novo Usuário</a>
+</div>
+<table class="table table-bordered bg-white shadow-sm">
+    <thead class="table-dark">
+        <tr>
+            <th>ID</th>
+            <th>Nome</th>
+            <th>E-mail</th>
+            <th>Cargo</th>
+        </tr>
+    </thead>
+    <tbody>
+        <% usuarios.forEach(user => { %>
+            <tr>
+                <td><%= user.id %></td>
+                <td><%= user.nome %></td>
+                <td><%= user.email %></td>
+                <td><%= user.cargo %></td>
+            </tr>
+        <% }) %>
+    </tbody>
+</table>
+<%- include('../partials/footer') %>
+
+```
+
+## Fase 10: Como Ligar o Servidor e Testar
+
+1. Certifique-se de que o serviço do MySQL está rodando na sua máquina.
+2. No terminal do VS Code, garanta que você está dentro da pasta **`server/`**:
+
+
+```bash
+cd server
+npm start
+
+```
+
+
+3. O terminal exibirá:
+`Servidor MercadoGrassi rodando em: http://localhost:3000`
+4. Abra o navegador em **`http://localhost:3000`**:
+* Ele vai redirecionar automaticamente para `http://localhost:3000/usuarios/login`.
+* Entre com o e-mail `admin@mercadograssi.com` e senha `123456`.
+* Você será levado para `http://localhost:3000/produtos/listar` e poderá cadastrar e listar novos produtos e usuários pelo menu superior.
+    

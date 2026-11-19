@@ -71,4 +71,53 @@ module.exports = {
       );
     }
   },
+  // atualizar
+  renderizarEditar: async (req, res) => {
+    try {
+      const id = req.params.id;
+      const produto = await produtosModel.buscarId(id);
+
+      if (!produto) {
+        console.log("Nenhum produto encontrado para o ID:", id);
+        return res.redirect("/produtos/listar");
+      }
+
+      res.render("produtos/editar", { produto });
+    } catch (erro) {
+      console.log(
+        `o erro foi vc amar dms ${erro} e tbm esse ao buscar o produto`,
+      );
+    }
+  },
+  editarProduto: async (req, res) => {
+    try {
+      const id = req.params.id;
+      const {
+        codigo_interno,
+        nome,
+        categoria,
+        unidade_venda,
+        preco,
+        imagem,
+        esta_ativo,
+      } = req.body;
+
+      const publico_bool = esta_ativo === "1" || esta_ativo === "true" ? 1 : 0;
+
+      await produtosModel.editarProduto(
+        id,
+        codigo_interno,
+        nome,
+        categoria,
+        unidade_venda,
+        preco,
+        imagem,
+        publico_bool,
+      );
+
+      res.redirect("/produtos/listar");
+    } catch (erro) {
+      console.log(`Erro ao editar produto: ${erro}`);
+    }
+  },
 };

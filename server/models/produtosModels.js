@@ -1,5 +1,6 @@
 // Importar as configurações do banco
 const db = require("../config/db.js");
+const { editarProduto } = require("../controller/produtosController.js");
 module.exports = {
   // função de criar passando imformaçoes
   criarProduto: async (
@@ -42,5 +43,38 @@ module.exports = {
   excluirProduto: async (id) => {
     const sql = `DELETE FROM tb_produtos WHERE id_produto = ?`;
     await db.execute(sql, [id]);
+  },
+
+  // update
+  buscarId: async (id) => {
+    // query para fazer a operação no banco
+    const sql = `SELECT * FROM tb_produtos WHERE id_produto= ?`;
+    // faz a opéração
+    const [linhas] = await db.execute(sql, [id]);
+    // retornar a lista de produto
+    return linhas[0];
+  },
+  editarProduto: async (
+    id,
+    codigo_interno,
+    nome,
+    categoria,
+    unidade_venda,
+    preco,
+    imagem,
+    esta_ativo,
+  ) => {
+    const sql = `UPDATE tb_produtos SET codigo_interno = ?, nome = ?, categoria = ?, unidade_venda = ?, preco = ?, imagem = ?, esta_ativo = ? WHERE id_produto = ?`;
+    const [resultado] = await db.execute(sql, [
+      codigo_interno,
+      nome,
+      categoria,
+      unidade_venda,
+      preco,
+      imagem,
+      esta_ativo,
+      id,
+    ]);
+    return resultado;
   },
 };

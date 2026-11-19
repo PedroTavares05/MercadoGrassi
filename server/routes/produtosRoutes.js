@@ -16,3 +16,10 @@ router.get("/listar", produtosController.listarTodosProdutos);
 
 //exclui produto
 router.post("/excluir/:id", produtosController.excluirProduto);
+
+// update
+// chama a pagina buscando as imformações do produto e atualiza com as novas imformações
+router.get("/editar/:id", produtosController.renderizarEditar);
+
+// editar
+router.post("/editar/:id", produtosController.editarProduto);

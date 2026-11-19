@@ -27,4 +27,13 @@ module.exports = {
     const sql = `DELETE FROM tb_usuarios WHERE id_usuario = ?`;
     await db.execute(sql, [id]);
   },
+  buscarId: async (id) => {
+    const sql = `SELECT * FROM tb_usuarios WHERE id_usuario = ?`;
+    const [linhas] = await db.execute(sql, [id]);
+    return linhas[0];
+  },
+  editarUsuario: async (id, { nome, email, senha, perfil, esta_ativo }) => {
+    const sql = `UPDATE tb_usuarios SET nome = ?, email = ?, senha = ?, perfil = ?, esta_ativo = ? WHERE id_usuario = ?`;
+    await db.execute(sql, [nome, email, senha, perfil, esta_ativo, id]);
+  },
 };
